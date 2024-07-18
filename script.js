@@ -27,6 +27,7 @@ const addTask = () => {
       disabled: false,
     });
   }
+  todoInput.value = "";
   saveToLocalStorage();
   displayTasks();
 };
@@ -46,7 +47,9 @@ function displayTasks() {
     <div class="todo-container">
     <input type="checkbox" class="todo-checkbox" 
     id = "input-${index}" ${item.disabled ? "checked" : ""}>
-    <p id="todo-${index}" class="${item.disabled ? "disabled" : ""}">
+    <p id="todo-${index}" class="${
+      item.disabled ? "disabled" : ""
+    }" onclick="editTask(${index})">
     ${item.text}
     </p>
     </div>
@@ -56,7 +59,7 @@ function displayTasks() {
     });
     todoList.appendChild(p);
   });
-  todoCount.textContent = todo.length;
+  todoCount.innerHTML = todo.length;
 }
 
 const saveToLocalStorage = () => {
@@ -67,4 +70,23 @@ function toggleTask(idx) {
   todo[idx].disabled = !todo[idx].disabled;
   saveToLocalStorage();
   displayTasks();
+}
+
+function editTask(idx) {
+  const currEle = document.getElementById(`todo-${idx}`);
+  const currText = todo[idx].text;
+  const inputEle = document.createElement("input");
+  inputEle.value = currText;
+  currEle.replaceWith(inputEle);
+  inputEle.focus();
+  inputEle.addEventListener("keydown", (event) => {
+    if (event.key == "Enter") {
+      const updatedText = inputEle.value.trim();
+      if (updatedText) {
+        todo[idx].text = updatedText;
+        saveToLocalStorage();
+      }
+      displayTasks();
+    }
+  });
 }
